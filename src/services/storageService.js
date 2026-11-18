@@ -1,0 +1,131 @@
+// Storage service with LocalStorage persistence and initial data fallback
+
+import {
+  INITIAL_CUSTOMERS,
+  INITIAL_EMPLOYEES,
+  INITIAL_SHIFTS,
+  INITIAL_ASSIGNMENTS,
+  INITIAL_CAMERAS,
+  INITIAL_HOURLY_SURVEILLANCE_BATCHES,
+} from '../data/initialData.js';
+
+const STORAGE_KEYS = {
+  CUSTOMERS: 'worktrack_customers',
+  EMPLOYEES: 'worktrack_employees',
+  SHIFTS: 'worktrack_shifts',
+  ASSIGNMENTS: 'worktrack_assignments',
+  AUTH: 'worktrack_auth_state',
+  CAMERAS: 'worktrack_cameras',
+  SURVEILLANCE_BATCHES: 'worktrack_surveillance_batches',
+};
+
+export const storageService = {
+  getCustomers: () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.CUSTOMERS);
+      if (!data) return INITIAL_CUSTOMERS;
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_CUSTOMERS;
+    } catch {
+      return INITIAL_CUSTOMERS;
+    }
+  },
+  saveCustomers: (customers) => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+  },
+
+  getEmployees: () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.EMPLOYEES);
+      if (!data) return INITIAL_EMPLOYEES;
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_EMPLOYEES;
+    } catch {
+      return INITIAL_EMPLOYEES;
+    }
+  },
+  saveEmployees: (employees) => {
+    localStorage.setItem(STORAGE_KEYS.EMPLOYEES, JSON.stringify(employees));
+  },
+
+  getShifts: () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.SHIFTS);
+      if (!data) return INITIAL_SHIFTS;
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_SHIFTS;
+    } catch {
+      return INITIAL_SHIFTS;
+    }
+  },
+  saveShifts: (shifts) => {
+    localStorage.setItem(STORAGE_KEYS.SHIFTS, JSON.stringify(shifts));
+  },
+
+  getAssignments: () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.ASSIGNMENTS);
+      if (!data) return INITIAL_ASSIGNMENTS;
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_ASSIGNMENTS;
+    } catch {
+      return INITIAL_ASSIGNMENTS;
+    }
+  },
+  saveAssignments: (assignments) => {
+    localStorage.setItem(STORAGE_KEYS.ASSIGNMENTS, JSON.stringify(assignments));
+  },
+
+  getCameras: () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.CAMERAS);
+      if (!data) return INITIAL_CAMERAS;
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_CAMERAS;
+    } catch {
+      return INITIAL_CAMERAS;
+    }
+  },
+  saveCameras: (cameras) => {
+    localStorage.setItem(STORAGE_KEYS.CAMERAS, JSON.stringify(cameras));
+  },
+
+  getSurveillanceBatches: () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.SURVEILLANCE_BATCHES);
+      if (!data) return INITIAL_HOURLY_SURVEILLANCE_BATCHES;
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_HOURLY_SURVEILLANCE_BATCHES;
+    } catch {
+      return INITIAL_HOURLY_SURVEILLANCE_BATCHES;
+    }
+  },
+  saveSurveillanceBatches: (batches) => {
+    localStorage.setItem(STORAGE_KEYS.SURVEILLANCE_BATCHES, JSON.stringify(batches));
+  },
+
+  getAuthState: () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.AUTH);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  },
+  saveAuthState: (auth) => {
+    localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(auth));
+  },
+
+  resetAllData: () => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(INITIAL_CUSTOMERS));
+    localStorage.setItem(STORAGE_KEYS.EMPLOYEES, JSON.stringify(INITIAL_EMPLOYEES));
+    localStorage.setItem(STORAGE_KEYS.SHIFTS, JSON.stringify(INITIAL_SHIFTS));
+    localStorage.setItem(STORAGE_KEYS.ASSIGNMENTS, JSON.stringify(INITIAL_ASSIGNMENTS));
+    localStorage.removeItem('worktrack_attendance');
+    localStorage.removeItem('worktrack_reports');
+    localStorage.removeItem('worktrack_notifications');
+    localStorage.removeItem('worktrack_notification_settings');
+    localStorage.setItem(STORAGE_KEYS.CAMERAS, JSON.stringify(INITIAL_CAMERAS));
+    localStorage.setItem(STORAGE_KEYS.SURVEILLANCE_BATCHES, JSON.stringify(INITIAL_HOURLY_SURVEILLANCE_BATCHES));
+  }
+};

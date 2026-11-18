@@ -1,0 +1,86 @@
+from rest_framework import serializers
+from apps.surveillance.models import SurveillanceBatch, CameraSnapshot
+
+
+class CameraSnapshotSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CameraSnapshot
+        fields = [
+            'id',
+            'batch',
+            'camera_id',
+            'camera_name',
+            'zone',
+            'is_high_risk',
+            'capture_time',
+            'human_detected',
+            'human_count',
+            'ai_status',
+            'ai_confidence',
+            'ai_analysis',
+            'employee_verification',
+            'employee_notes',
+            'simulated_visual',
+            'image',
+            'image_url',
+            'uploaded_at',
+        ]
+        read_only_fields = ['id', 'batch', 'camera_id', 'camera_name', 'zone', 'is_high_risk', 'capture_time', 'human_detected', 'human_count', 'ai_status', 'ai_confidence', 'ai_analysis', 'simulated_visual', 'image_url', 'uploaded_at']
+
+    def get_image_url(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+
+
+class SurveillanceBatchSerializer(serializers.ModelSerializer):
+    snapshots = CameraSnapshotSerializer(many=True, read_only=True)
+    customer_name = serializers.CharField(source='customer.company_name', read_only=True)
+    employee_name = serializers.CharField(source='employee.user.get_full_name', read_only=True)
+
+    class Meta:
+        model = SurveillanceBatch
+        fields = [
+            'id',
+            'customer',
+            'customer_name',
+            'employee',
+            'employee_name',
+            'date',
+            'hour_slot',
+            'hour24',
+            'status',
+            'total_cameras',
+            'flagged_suspicious_count',
+            'overall_assessment',
+            'actions_taken',
+            'submitted_at',
+            'customer_notified',
+            'snapshots',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = [
+            'id',
+            'status',
+            'total_cameras',
+            'flagged_suspicious_count',
+            'submitted_at',
+            'customer_notified',
+            'created_at',
+            'updated_at',
+        ]
+
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.instance:
+            editable_fields = {'overall_assessment', 'actions_taken'}
+            for name, field in fields.items():
+                if name not in editable_fields:
+                    field.read_only = True
+        return fields
